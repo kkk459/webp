@@ -51,7 +51,21 @@ module.exports = {
           (process.env.NODE_ENV === 'development' ?
             'style-loader' :
             MiniCssExtractPlugin.loader),
-          'css-loader'
+          {
+            loader: "css-loader",            
+            options: {
+              importLoaders: 1
+            }
+          }, 
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                // 添加 autoprefixer 插件
+                plugins: [require("autoprefixer")],
+              },
+            },
+          }
         ]
       },
       {
