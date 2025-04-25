@@ -1,6 +1,7 @@
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const HTMLWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: "./src/index.js", // Ensure this is the correct entry file
@@ -25,8 +26,13 @@ module.exports = {
     //   template: "./index.html", // Use your index.html as a template
     //   filename: "index.html",
     // }),
-    new ESLintPlugin({ 
+    new ESLintPlugin({
       extensions: ['.js', '.ts'],
+    }),
+    new MiniCssExtractPlugin(),
+    new HTMLWebpackPlugin({
+      template: './public/index.html',  // 指定HTML模板路径
+      filename: 'index.html'  // 输出的文件名
     })
   ],
   module: {
@@ -40,7 +46,13 @@ module.exports = {
       // },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        use: [
+          // 根据运行环境判断使用那个 loader
+          (process.env.NODE_ENV === 'development' ?
+            'style-loader' :
+            MiniCssExtractPlugin.loader),
+          'css-loader'
+        ]
       },
       {
         test: /\.js$/,
@@ -57,6 +69,13 @@ module.exports = {
         test: /\.ts$/,
         use: "ts-loader",
       },
+      {
+        test: /\.(png|jpg|gif|jpeg)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[hash][ext][query]'  // 输出到 images 文件夹
+        }
+      }
     ],
   },
   resolve: {
